@@ -425,7 +425,7 @@
         // 8. 平衡中庸（两边25-50且差值小）
         else if (sweet >= 25 && salt >= 25 && sweet <= 50 && salt <= 50 && Math.abs(diff) <= 15) {
             title = "爱卖不卖";
-            desc = "你心态很好，有时也会有被产品整到无语与力竭的时刻，但最后千言万语往往化作一句帅哥们你们随便吧。豆包豆包，帮我直接生成14双人cha。";
+            desc = "你心态很好，有时也会有被产品整到无语与力竭的时刻，但最后千言万语往往化作一句帅哥们你们随便吧。豆包豆包，帮我直接生成14双人cha和更多不可描述的视频。";
         }
         // 9. 甜虐交错（两边35-65且差值小）
         else if (sweet >= 35 && salt >= 35 && Math.abs(diff) <= 20) {
@@ -448,7 +448,7 @@
         }
         
         let easterEgg = "";
-        if (userAnswers[12] === 0 && sweet > 40) easterEgg = "\n事件：你曾在深夜时分兴致勃勃刷过糖点剪辑视频无法入眠。";
+        if (userAnswers[12] === 0 && sweet > 40) easterEgg = "\n事件：你曾在深夜时分兴致勃勃刷过糖点剪辑视频兴奋到无法入眠。";
         else if (userAnswers[5] === 1 && salt > 50) easterEgg = "\n事件：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓。";
         else if (userAnswers[19] === 2 && sweet > salt) easterEgg = "\n事件：你的手机里存满了诡异动图，每天睡前品鉴。";
         else if (userAnswers[20] === 0 && sweet > 45) easterEgg = "\n事件：你是奔走相告型雨披，雕蛙卖了微博转发就频繁了。留言板显化中。";
