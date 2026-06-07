@@ -410,7 +410,7 @@
         // 5. 甜偏多（甜≥45，甜-发卖≥20）
         else if (sweet >= 45 && sweet - salt >= 20) {
             title = "爽就完事了";
-            desc = "一个评论就能让你回味一个星期，你心态很好，没有那么在乎营业频率，也有可能是因为被逼得没招了不得不好。每天乐呵呵捡垃圾，闲来无事品鉴气象台女神们做的饭。只要同框就是糖。认为锐因早就暗渡陈仓，未来可期。";
+            desc = "一个评论就能让你回味一个星期，你心态很好，没有那么在乎营业频率，也有可能是因为被逼得没招了不得不好。每天乐呵呵冲浪只在意产品，闲来无事品鉴气象台女神们做的饭。只要同框就是糖。认为锐因早就暗渡陈仓，未来可期。";
         }
         // 6. 虐偏多（发卖≥45，发卖-甜≥20）
         else if (salt >= 45 && salt - sweet >= 20) {
@@ -452,7 +452,7 @@
         else if (userAnswers[5] === 1 && salt > 50) easterEgg = "\n事件：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓。";
         else if (userAnswers[19] === 2 && sweet > salt) easterEgg = "\n事件：你手机里存满了诡异动图，每天睡前品鉴。";
         else if (userAnswers[20] === 0 && sweet > 45) easterEgg = "\n事件：你是奔走相告型雨披，雕蛙卖了恨不得转发到提示频繁。";
-        else if (userAnswers[8] === 0 && sweet > 35) easterEgg = "\n事件：你觉得击掌缩回的那一下比真击掌还好嗑，循环了1499遍。";
+        else if (userAnswers[8] === 0 && sweet > 35) easterEgg = "\n事件：你在搞家产的同时也认识了很多很好的互关～";
         
         let resultHtml = `<div class="result-card">
                             <div class="result-title">${title}</div>
