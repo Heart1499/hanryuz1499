@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>总以为谜一般难懂的我 · 雨披人格测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a1f2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'SF Pro Text', 'Helvetica Neue', Helvetica, 'Noto Sans', sans-serif;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 下雨动画 */
+        @keyframes rainDrop {
+            0% {
+                transform: translateY(-100vh) translateX(0);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .rain i {
+            position: absolute;
+            background: rgba(173, 216, 230, 0.5);
+            width: 2px;
+            height: 15px;
+            border-radius: 2px;
+            animation: rainDrop linear infinite;
+        }
+
+        /* 小手机精致框体 */
+        .phone {
+            width: 100%;
+            max-width: 380px;
+            height: 700px;
+            background: #1b3b4f;
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 8px #2a5f7a, 0 0 0 12px #1e4b62;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+            backdrop-filter: blur(2px);
+        }
+
+        .dynamic-island {
+            background: #0f2c3a;
+            width: 110px;
+            height: 34px;
+            margin: 12px auto 0;
+            border-radius: 28px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .screen {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px 30px;
+            scrollbar-width: thin;
+            background: rgba(20, 50, 70, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .screen::-webkit-scrollbar {
+            width: 4px;
+        }
+        .screen::-webkit-scrollbar-track {
+            background: #2a5f7a;
+            border-radius: 10px;
+        }
+        .screen::-webkit-scrollbar-thumb {
+            background: #7fc1d4;
+            border-radius: 10px;
+        }
+
+        /* 隐藏状态栏数值 */
+        .status-bar {
+            display: none;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #c1e4f5, #6ab0de);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sub {
+            font-size: 13px;
+            color: #b8deff;
+            border-left: 3px solid #6ab0de;
+            padding-left: 12px;
+            margin-bottom: 24px;
+        }
+
+        .story-box {
+            background: rgba(30, 70, 95, 0.8);
+            backdrop-filter: blur(4px);
+            padding: 16px;
+            border-radius: 28px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.45;
+            color: #e2f0fa;
+            border: 1px solid #4c8eb3;
+        }
+
+        .question {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 18px 16px;
+            margin-bottom: 20px;
+            border: 1px solid #5fa3c2;
+        }
+        .q-text {
+            font-weight: 600;
+            font-size: 17px;
+            margin-bottom: 16px;
+            color: #f0fcff;
+            line-height: 1.35;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid #7fc1d4;
+            border-radius: 60px;
+            padding: 12px 16px;
+            font-size: 14px;
+            text-align: left;
+            color: #eef5fc;
+            transition: all 0.15s;
+            cursor: pointer;
+            font-weight: 470;
+            backdrop-filter: blur(4px);
+        }
+        .option-btn:active {
+            background: rgba(100, 180, 210, 0.5);
+            transform: scale(0.97);
+        }
+
+        .next-btn, .restart-btn {
+            background: #2f7a9e;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            margin-top: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .next-btn:active, .restart-btn:active {
+            background: #1e5f7e;
+            transform: scale(0.97);
+        }
+
+        .result-card {
+            background: rgba(20, 60, 85, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 36px;
+            padding: 24px 20px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid #6ab0de;
+        }
+        .result-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #f0d89f;
+            margin-bottom: 12px;
+        }
+        .result-desc {
+            font-size: 15px;
+            line-height: 1.45;
+            color: #d9ecf5;
+            white-space: pre-line;
+        }
+
+        footer {
+            font-size: 10px;
+            text-align: center;
+            color: #8bbdd6;
+            padding: 12px 0 8px;
+        }
+        button {
+            background: none;
+            border: none;
+        }
+        .branch-hint {
+            font-size: 12px;
+            background: rgba(50, 110, 140, 0.7);
+            display: inline-block;
+            border-radius: 40px;
+            padding: 4px 12px;
+            margin-bottom: 12px;
+            color: #c2e4ff;
+        }
+    </style>
+</head>
+<body>
+<div class="rain" id="rainContainer"></div>
+<div class="phone">
+    <div class="dynamic-island"></div>
+    <div class="screen" id="appScreen">
+        <div id="mainContent"></div>
+        <footer>今日雨 · 测试���供娱乐</footer>
+    </div>
+</div>
+
+<script>
+    // 下雨效果
+    function createRain() {
+        const rainContainer = document.getElementById('rainContainer');
+        rainContainer.innerHTML = '';
+        const dropsCount = 60;
+        for (let i = 0; i < dropsCount; i++) {
+            let drop = document.createElement('i');
+            let left = Math.random() * window.innerWidth;
+            let duration = Math.random() * 1.5 + 0.8;
+            let delay = Math.random() * 5;
+            let width = Math.random() * 2 + 1;
+            let height = Math.random() * 15 + 8;
+            drop.style.left = left + 'px';
+            drop.style.width = width + 'px';
+            drop.style.height = height + 'px';
+            drop.style.animationDuration = duration + 's';
+            drop.style.animationDelay = delay + 's';
+            drop.style.opacity = Math.random() * 0.5 + 0.2;
+            rainContainer.appendChild(drop);
+        }
+    }
+    window.addEventListener('resize', createRain);
+    createRain();
+
+    // 数值机制：甜度(sweet) 和 发卖欲(salt)
+    let sweet = 0;
+    let salt = 0;
+    let currentQ = 0;
+    let finished = false;
+    let userAnswers = [];
+    
+    // 21道题目
+    const questions = [
+        { text: "视频里申惟又双叒叕紧急转弯避开韩振眼神，你第一反应是？", 
+          opts: ["哇太对味了，必须狂截图循环", "心梗 为什么又躲", "这也算正常互动的一种", "面无表情保存动图投给气象台，有什么等下次再品"] },
+        { text: "韩振直播说觉得申惟和队友像在谈恋爱，申惟当场挠头无语但笑了。你内心？", 
+          opts: ["这种尴尬的错位感和信息差也是有的嗑啊", "申惟你要不要再解释一下", "嘻嘻爱看一些年上吃瘪", "这个嗑点get不到,平静等待下一集"] },
+        { text: "看到两人机场照，申惟默默拉住韩振手腕。你的嗑学反应？", 
+          opts: ["安全感拉满，年上默默的守护我狂吃", "这很心酸", "啊啊啊啊牵手了今夜无眠狂发一百条微博留言板抽奖显化", "微微一笑深藏功与名"] },
+        { text: "如果现在出现一个"申惟韩振双人济州岛旅行vlog"预告，你第一秒想什么？", 
+          opts: ["肯定尴尬又别扭，但越尴尬越好嗑", "快让我看，说不定又有新的互动呢", "普莱蒂斯想圈钱才这样的吧呵呵", "不管怎样先嗑为敬"] },
+        { text: "韩振又用中文喊'申惟'不加哥，你觉得这是？", 
+          opts: ["是爱称啊爱称，推拉的神", "申惟心里应该也在暗爽吧", "文化差异但很好笑", "喊全名莫名涩涩"] },
+        { text: "韩振给粉丝比心没注意到旁边的申惟，申惟偷瞄了一下收回目光。你：", 
+          opts: ["痛痛的 就是这种怅然若失才带感", "刀死我了互关们我今天退网了", "其实是嫂子瘾大发所以在偷瞄对象", "问题不大啦，他们就这味"] },
+        { text: "申惟和韩振意外分到同一组做任务但全程几乎没有很多互动，你怎么想？", 
+          opts: ["这就是电波不合但命运硬凑的风味", "又避嫌啥意思", "我盯着屏幕帮他们意念对视", "肯定有很多互动啊只是被公司剪了咋那么坏"] },
+        { text: "韩振发了天空照，申惟三小时后也发了一张类似角度的云。你觉得这会是巧合吗？", 
+          opts: ["绝对不是巧合", "坏端端的也是好起来了", "龟糖，敢不敢卖点真的", "一定是约好但避嫌不发一起"] },
+        { text: "韩振想跟申惟击掌，申惟手抬了一半又缩回去。你？", 
+          opts: ["竟然有一丝诡异的搞笑", "��不知道您俩到底是咋了。", "不讲不讲 截图截图", "这样很好，保持推拉"] },
+        { text: "如果给你一个机会问申惟：为什么总躲韩振，你希望他回答什么？", 
+          opts: ["因为有点奇怪的感觉（害羞）", "没有躲啊因为不想让他困扰", "珍珍韩振和别人不一样", "沉默然后转移话题"] },
+        { text: "看见韩振学申惟的语气词，申惟在旁边耳朵泛红。你觉得？", 
+          opts: ["kiyo，年下故意逗年上", "申惟心乱了，今晚抓到法死法死", "韩振这不是在撩吗", "纯爱产产驾到通通闪开"] },
+        { text: "申惟主动帮韩振整理衣领。你内心：", 
+          opts: ["好老夫老妻，又性情了", "大哥哥不是会照顾人吗", "下一秒又装作若无其事了，雕蛙就这个味", "我要继续宝着我家满分产"] },
+        { text: "你觉得申惟现在知道'是锐化的原因'吗？", 
+          opts: ["绝对不知道，不应该也不可以知道", "可能隐约知道但没说破", "韩振自己早就招了吧", "希望申惟永远蒙在鼓里"] },
+        { text: "最近一次直播申惟发言时韩振默默点头附和。你反应？", 
+          opts: ["好乖好乖，家属感溢出", "像在附和老公说得对，申惟地位+1", "但是下一秒又不互动了你们随便吧", "截图截图必须截图反复品味"] },
+        { text: "演唱会ending彩带落下，申惟看了一眼韩振然后转头。你怎么品？", 
+          opts: ["他看他了...亮晶晶的眼睛...", "这么重要的日子为什么不上去拥抱一下", "新退展，但是那一秒里有万分之一克真心", "慢放欣赏十遍"] },
+        { text: "韩振在wvs说申惟哥今天请他吃了拱辰丹。你的第一直觉？", 
+          opts: ["是炫耀，好可爱", "申惟居然会主动投喂", "平平无奇小日常但好温馨", "又卖了好幸福"] },
+        { text: "如果锐因两人同时出现在你面前，你会递给他们什么？", 
+          opts: ["不xx就不能出来的房间", "一本如何正确直视自己心意的手册", "直接问他俩什么关系", "两杯甜啦啦奶茶让他们自己悟出反义词苦给给"] },
+        { text: "韩振自拍背景出现了申惟的私人物品，但申惟本人没出镜。你脑补？", 
+          opts: ["我已经在脑补不可以播放的画面了", "应该就是个巧合", "申惟偷偷送的礼物", "嫂子故意暗戳戳秀给我们看的"] },
+        { text: "如果问"谁最会撒娇"，申惟指向韩振，韩振当场脸红。你觉得这个场景？", 
+          opts: ["太纯了，小情侣的把戏", "很正常，没什么值得拿出来说的", "申惟你是不是私下经常看", "这个体型差性格差好萌"] },
+        { text: "现在请用一句话形容你心中的锐因关系", 
+          opts: ["很像爱情但不一定是爱情", "是我偏要勉强", "爱是想触碰又收回手", "说不定真就在谈啊"] },
+        { text: "附加题：如果韩振真的跟申惟单独出去吃了顿饭还被偶遇，你第一反应是？", 
+          opts: ["转发艾特同担互关，你快来看啊家产背着我们偷偷幸福了", "我得冷静一下但是1499", "AI生成的就别哄我了", "他们俩为什么一起吃饭是约会吗"] }
+    ];
+    
+    // 权重表
+    const effects = [
+        [[6,0], [0,9], [0,0], [3,2]],
+        [[5,0], [0,8], [4,1], [2,0]],
+        [[7,0], [0,8], [6,0], [3,0]],
+        [[5,0], [3,0], [0,6], [4,1]],
+        [[6,0], [4,0], [1,1], [5,0]],
+        [[0,6], [0,10], [5,0], [0,0]],
+        [[5,0], [0,9], [2,0], [3,2]],
+        [[7,0], [5,0], [0,1], [2,3]],
+        [[4,2], [0,8], [3,0], [5,0]],
+        [[6,0], [0,0], [5,0], [0,7]],
+        [[7,0], [4,2], [5,0], [6,0]],
+        [[6,0], [2,0], [3,1], [5,0]],
+        [[8,0], [2,2], [0,2], [7,0]],
+        [[6,0], [5,0], [0,5], [4,0]],
+        [[7,0], [0,8], [5,0], [6,0]],
+        [[5,0], [5,0], [2,0], [5,0]],
+        [[2,6], [6,0], [0,4], [2,2]],
+        [[7,0], [0,0], [5,0], [6,1]],
+        [[7,0], [0,2], [5,0], [4,0]],
+        [[3,3], [4,4], [6,0], [4,2]],
+        [[7,0], [5,2], [0,6], [3,3]]
+    ];
+    
+    function applyEffect(qIdx, optIdx) {
+        if (qIdx >= effects.length) return;
+        const delta = effects[qIdx][optIdx];
+        if (!delta) return;
+        sweet = Math.max(0, Math.min(120, sweet + delta[0]));
+        salt = Math.max(0, Math.min(120, salt + delta[1]));
+    }
+    
+    let mainContainer = document.getElementById('mainContent');
+    
+    function renderQuestion() {
+        if (finished || currentQ >= questions.length) {
+            showResult();
+            return;
+        }
+        const q = questions[currentQ];
+        let branchNote = "";
+        if (currentQ === 8) branchNote = "<div class='branch-hint'>谁在躲</div>";
+        if (currentQ === 12) branchNote = "<div class='branch-hint'>神秘用户7876376847</div>";
+        if (currentQ === 15) branchNote = "<div class='branch-hint'>健康的味道，像哥一样</div>";
+        
+        let html = `<div class="story-box">📡 今日雨 · 第${currentQ+1}/${questions.length} 个信号</div>
+                    ${branchNote}
+                    <div class="question">
+                        <div class="q-text">${q.text}</div>
+                        <div class="options" id="optionsContainer"></div>
+                    </div>`;
+        mainContainer.innerHTML = html;
+        const optsDiv = document.getElementById('optionsContainer');
+        q.opts.forEach((opt, idx) => {
+            let btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => {
+                userAnswers.push(idx);
+                applyEffect(currentQ, idx);
+                currentQ++;
+                renderQuestion();
+            };
+            optsDiv.appendChild(btn);
+        });
+    }
+    
+    function showResult() {
+        finished = true;
+        let title = "";
+        let desc = "";
+        
+        const diff = sweet - salt;
+        
+        if (sweet >= 80 && salt <= 30) {
+            title = "两眼一睁雕蛙我来了！";
+            desc = "你看到锐因躲闪只觉得'爽，好嗑'，不自然的表情使你嘴角上扬。你那种看酸涩互动也像吃跳跳糖，越别扭越开心。在你眼里他们已经是老夫老妻只是不肯承认。永恒心情是：看到你们好好的，我就幸福了。";
+        }
+        else if (salt >= 80 && sweet <= 30) {
+            title = "产品发卖主理人";
+            desc = "看到躲避的眼神，没有卖的那些日子，你都恨不得直接冲到普莱蒂斯。每次躲闪你血压升高，内心咆哮你们只生不养，嫡雨披要发卖亲爹娘，实则嗑得最深。容易emo但又不肯跑路，典型刀子嘴豆腐心，锐因你这里欠我的用什么还。";
+        }
+        else if (sweet >= 70 && salt >= 40 && salt <= 70) {
+            title = "什么酸酸甜甜我们最爱";
+            desc = "你完美平衡了'好甜'和'好痛'，锐因给你带来过山车般的体验。一边觉得老产的风味真是仙品啊，一边为他们的不营业心塞。所以我的双人抖和双人直播都在哪里？";
+        }
+        else if (sweet >= 65 && salt >= 65) {
+            title = "被雕蛙调成m了";
+            desc = "你已经适应了神鬼二象性，无论两个人怎么互动你都会拍手叫好，只要有互动就行。你会发微博说诡秘们我不会再嗑了，实则乐在其中，隐隐享受。";
+        }
+        else if (sweet >= 60 && salt <= 45 && sweet - salt >= 20) {
+            title = "爽就完事了";
+            desc = "一个评论就能让你回味一个星期，你心态巨好，不在乎营业频率。每天乐呵呵捡垃圾，闲来无事品鉴气象台女神们做的饭。只要同框就是糖。认为锐因早就暗渡陈仓，未来可期。";
+        }
+        else if (salt >= 60 && sweet <= 45 && salt - sweet >= 20) {
+            title = "无酸涩不锐因";
+            desc = "你唯爱看他们尴尬、推拉、不熟。这是他们最特别，也是最吸引你的地方。你手机里存满了各种神秘动图，每晚睡前必须品鉴。当合照出现时，你不禁发问：是AI吗？";
+        }
+        else if (sweet >= 35 && sweet <= 70 && salt >= 35 && salt <= 70 && Math.abs(diff) <= 20) {
+            title = "爱卖不卖";
+            desc = "你心态很好，有时也会有被产品整到无语与力竭的时刻，但最后千言万语往往化作一句帅哥们你们随便吧。";
+        }
+        else if (sweet < 40 && salt < 40) {
+            title = "抓耳挠腮等同框 进展退展都是展";
+            desc = "摇摆不定的相处模式带给你的感觉更像一部未完待续的连续剧，一本没有完结的小说。遇到不好的、你不想看到的，统统存档跳过。但是道上的规矩是不许推未完结文。";
+        }
+        else if (sweet >= 50 && salt >= 50 && Math.abs(diff) <= 15) {
+            title = "薛定谔的雨披";
+            desc = "你时而觉得他俩好甜，有时又感觉不知道发生了什么，他们的关系又一朝回到解放前。你的解读取决于当天天气。但你可能是所有雨披里最接近锐因真实状态的人——因为连他们自己也不知道这算什么关系。";
+        }
+        else if (sweet >= 45 && sweet > salt + 15) {
+            title = "对产品虐恋也是恋";
+            desc = "我好爱你们，我好恨你们。\n建议多做几次测试看看会不会变质，全世���倒数第一喜欢你也是第一。毕竟恨海往往也是情天，但天可比海大很多呢。";
+        }
+        else if (salt >= 45 && salt > sweet + 15) {
+            title = "仰卧起坐型";
+            desc = "你容易被老产不卖的日子伤到，但又不舍得跑。时而血压飙升，时而血糖飙升，属于仰卧起坐型，锐因欠你一个心脏起搏器。";
+        }
+        else {
+            title = "雕蛙亲生的雨披";
+            desc = "你的测试结果很特别，你和其他雨披都不一样，因为你的测试结果形成了一种神秘配比。可能连你自己也说不清到底怎么嗑锐因。但这不重要，重要的是你还在看他们，还在宝他们，这就够了。";
+        }
+        
+        let easterEgg = "";
+        if (userAnswers[12] === 0 && sweet > 60) easterEgg = "\n支线解锁：你曾在深夜时分兴致勃勃刷过糖点剪辑视频无法入眠。";
+        else if (userAnswers[5] === 1 && salt > 70) easterEgg = "\n隐藏剧情：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓";
+        else if (userAnswers[19] === 2 && sweet > salt) easterEgg = "\n特典：你手机里存满了14诡异动图，每天都必须品鉴一番。";
+        else if (userAnswers[20] === 0 && sweet > 70) easterEgg = "\n彩蛋：你是奔走相告型雨披，雕蛙卖了恨不得转发到微博提示频繁";
+        else if (userAnswers[8] === 0 && sweet > 50) easterEgg = "\n彩蛋：你反而觉得击掌缩回那一下比真击上掌了还好嗑，循环了1499遍。";
+        
+        let resultHtml = `<div class="result-card">
+                            <div class="result-title">${title}</div>
+                            <div class="result-desc">${desc}${easterEgg}\n\n'今日降雨几率百分百'</div>
+                          </div>
+                          <div class="restart-btn" id="restartTest"> 重测一次</div>
+                          <div style="margin-top: 12px; text-align:center; font-size:12px; color:#8bbdd6;">—— 每个躲闪都是只有他们彼此知道的暗号 ——</div>`;
+        mainContainer.innerHTML = resultHtml;
+        document.getElementById('restartTest').onclick = resetGame;
+    }
+    
+    function resetGame() {
+        sweet = 0;
+        salt = 0;
+        currentQ = 0;
+        finished = false;
+        userAnswers = [];
+        renderQuestion();
+    }
+    
+    function startGame() {
+        let initHtml = `<div class="title">降雨几率百分百</div>
+        <div class="sub">锐因·雨披人格测试</div>
+        <div class="story-box">
+        「只是害怕爱你的心被你看透」<br><br>
+        测一测你在锐因宇宙的嗑法人格。<br>
+        根据你的选择，确认你是哪一款雨披~<br><br>
+        </div>
+        <div class="next-btn" id="startBtn">开始观测</div>`;
+        mainContainer.innerHTML = initHtml;
+        document.getElementById('startBtn').onclick = resetGame;
+    }
+    
+    startGame();
+</script>
+</body>
+</html>
