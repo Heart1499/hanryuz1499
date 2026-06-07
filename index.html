@@ -358,7 +358,7 @@
         if (currentQ === 12) branchNote = "<div class='branch-hint'>神秘用户7876376847</div>";
         if (currentQ === 15) branchNote = "<div class='branch-hint'>健康的味道，像哥一样</div>";
         
-        let html = `<div class="story-box">📡 今日雨 · 第${currentQ+1}/${questions.length} 个信号</div>
+        let html = `<div class="story-box">今日雨 · 第${currentQ+1}/${questions.length} 个信号</div>
                     ${branchNote}
                     <div class="question">
                         <div class="q-text">${q.text}</div>
@@ -400,7 +400,7 @@
         // 3. 双高（两边都≥55）
         else if (sweet >= 55 && salt >= 55) {
             title = "被雕蛙调成m了";
-            desc = "你看到锐因躲闪只觉得也够爽，够好嗑的，不自然的表情也都使你嘴角上扬。你那种看酸涩互动像吃跳跳糖，越别扭越开心。在你眼里他们已经是老夫老妻只是不肯承认，所以你才很容易甚至太容易原谅他们吧？";
+            desc = "你看到锐因躲闪只觉得也够爽，够好嗑的，不自然的表情也都使你嘴角上扬。你看酸涩互动像吃跳跳糖，越别扭越开心，不别扭更开心。你总会臆想他们已经是老夫老妻只是不肯承认需要避嫌。你有点容易甚至太容易原谅他们了吧？";
         }
         // 4. 双低（两边都<30）
         else if (sweet < 30 && salt < 30) {
