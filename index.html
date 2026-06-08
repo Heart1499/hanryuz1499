@@ -256,8 +256,6 @@
     window.addEventListener('resize', createRain);
     createRain();
 
-    let sweet = 0;
-    let salt = 0;
     let currentQ = 0;
     let finished = false;
     let userAnswers = [];
@@ -308,43 +306,6 @@
           opts: ["转发艾特同担互关，你快来看啊家产背着我们偷偷幸福了", "我得冷静一下但是1499", "AI生成的就别哄我了", "他们俩为什么一起吃饭是约会吗"] }
     ];
     
-    // 完全对称的权重系统：甜系和虐系数值对等，每道题总分固定为6
-    // 选项0(甜批)：甜+3，虐-1
-    // 选项1(虐批)：虐+3，甜-1
-    // 选项2(佛系)：甜+1，虐+1（几乎不涨，维持低分）
-    // 选项3(缺德)：甜+2，虐+2（均衡上涨，导向双高）
-    const effects = [
-        [[3,-1], [-1,3], [1,1], [2,2]],   // q0
-        [[3,-1], [-1,3], [1,1], [2,2]],   // q1
-        [[3,-1], [-1,3], [1,1], [2,2]],   // q2
-        [[3,0], [0,3], [1,1], [2,2]],     // q3
-        [[3,-1], [-1,3], [1,1], [2,2]],   // q4
-        [[0,3], [3,0], [1,1], [2,2]],     // q5
-        [[3,0], [0,3], [1,1], [2,2]],     // q6
-        [[3,-1], [-1,3], [1,1], [2,2]],   // q7
-        [[2,1], [1,2], [1,1], [2,2]],     // q8
-        [[3,-1], [-1,2], [1,1], [0,3]],   // q9 (选项3特殊：沉默转移话题，虐偏多)
-        [[3,0], [1,2], [1,1], [2,2]],     // q10
-        [[3,0], [1,2], [1,1], [2,2]],     // q11
-        [[3,-1], [-1,3], [1,1], [2,2]],   // q12
-        [[3,0], [2,0], [1,1], [2,2]],     // q13
-        [[3,0], [0,3], [1,1], [2,2]],     // q14
-        [[3,0], [3,0], [1,1], [2,2]],     // q15
-        [[1,3], [3,0], [1,1], [2,2]],     // q16
-        [[3,0], [0,2], [1,1], [2,2]],     // q17
-        [[3,0], [0,2], [1,1], [2,2]],     // q18
-        [[2,2], [2,3], [1,1], [2,2]],     // q19
-        [[3,0], [2,2], [1,1], [2,2]]      // q20
-    ];
-    
-    function applyEffect(qIdx, optIdx) {
-        if (qIdx >= effects.length) return;
-        const delta = effects[qIdx][optIdx];
-        if (!delta) return;
-        sweet = Math.max(0, Math.min(70, sweet + delta[0]));
-        salt = Math.max(0, Math.min(70, salt + delta[1]));
-    }
-    
     let mainContainer = document.getElementById('mainContent');
     
     function renderQuestion() {
@@ -372,7 +333,6 @@
             btn.innerText = opt;
             btn.onclick = () => {
                 userAnswers.push(idx);
-                applyEffect(currentQ, idx);
                 currentQ++;
                 renderQuestion();
             };
@@ -382,78 +342,99 @@
     
     function showResult() {
         finished = true;
+        
+        // 统计每种选项类型的数量
+        let type0Count = userAnswers.filter(a => a === 0).length; // 甜批
+        let type1Count = userAnswers.filter(a => a === 1).length; // 虐批/发卖
+        let type2Count = userAnswers.filter(a => a === 2).length; // 佛系/中立
+        let type3Count = userAnswers.filter(a => a === 3).length; // 缺德乐子人
+        
+        const total = userAnswers.length;
+        
+        // 找出占比最高的类型
+        const maxCount = Math.max(type0Count, type1Count, type2Count, type3Count);
+        const dominantTypes = [];
+        if (type0Count === maxCount) dominantTypes.push(0);
+        if (type1Count === maxCount) dominantTypes.push(1);
+        if (type2Count === maxCount) dominantTypes.push(2);
+        if (type3Count === maxCount) dominantTypes.push(3);
+        
+        const dominant = dominantTypes[0]; // 主类型
+        const secondMax = Math.max(...[type0Count, type1Count, type2Count, type3Count].filter((_, i) => i !== dominant));
+        
         let title = "";
         let desc = "";
         
-        const diff = sweet - salt;
+        // 根据主类型和次类型组合判定结果（12种）
         
-        // 12种结果按甜度和发卖欲均匀分布，每种阈值区间宽度≈10-15
-        // 1. 两眼一睁雕蛙我来了（甜高，虐低）
-        if (sweet >= 45 && salt <= 15) {
+        // 1. 两眼一睁雕蛙我来了！(甜批主导，且虐批很少)
+        if (dominant === 0 && type1Count <= 4) {
             title = "两眼一睁雕蛙我来了！";
             desc = "你已经适应了神鬼二象性，无论两个人怎么互动你都会拍手叫好，只要有互动就行。你会发微博说诡秘们我不会再嗑了，实则乐在其中，隐隐享受。你的永恒心情是：看到你们好好的，我就幸福了。";
         }
-        // 2. 产品发卖主理人（虐高，甜低）
-        else if (salt >= 45 && sweet <= 15) {
+        // 2. 产品发卖主理人 (虐批主导，且甜批很少)
+        else if (dominant === 1 && type0Count <= 4) {
             title = "产品发卖主理人";
             desc = "数着没有卖的那些日子，你都恨不得直接冲到普莱蒂斯。寡寡的日子让你血压升高，内心咆哮你们只生不养，嫡雨披要发卖亲爹娘，实则嗑得最深。容易emo但又不肯跑路，典型刀子嘴豆腐心，锐因你这里欠我的用什么还。";
         }
-        // 3. 被雕蛙调成m了（双高，两边都≥40）
-        else if (sweet >= 40 && salt >= 40) {
+        // 3. 被雕蛙调成m了 (缺德主导，或甜虐双高)
+        else if (dominant === 3 || (type0Count >= 7 && type1Count >= 7)) {
             title = "被雕蛙调成m了";
             desc = "你看到锐因躲闪只觉得也够爽，够好嗑的，不自然的表情也都使你嘴角上扬。你看酸涩互动像吃跳跳糖，越别扭越开心，不别扭更开心。你总会臆想他们已经是老夫老妻只是不肯承认需要避嫌。你有点容易甚至太容易原谅他们了吧？";
         }
-        // 4. 抓耳挠腮等同框（双低，两边都<18）
-        else if (sweet < 18 && salt < 18) {
+        // 4. 抓耳挠腮等同框 (佛系主导，或整体选择都很分散，分数都低)
+        else if (dominant === 2 && maxCount <= 8) {
             title = "抓耳挠腮等同框 进展退展都是展";
             desc = "摇摆不定的相处模式带给你的感觉更像一部未完待续的连续剧，一本没有完结的小说。遇到不好的、你不想看到的，统统存档跳过。但是道上的规矩是不许推未完结文，你已急哭。";
         }
-        // 5. 爽就完事了（甜偏多，甜≥35，甜-虐≥12）
-        else if (sweet >= 35 && sweet - salt >= 12) {
+        // 5. 爽就完事了 (甜批主导，虐批中等偏少)
+        else if (dominant === 0 && type1Count <= type0Count - 3) {
             title = "爽就完事了";
             desc = "一个wvs评论就能让你回味一个星期，你心态很好，也有可能是因为被逼得没招了不得不好，你常常说锐因小气鬼，算了锐因长命百岁。每天乐呵呵冲浪只在意产品，闲来无事品鉴抖音和气象台女神们做的饭。只要同框就被哄好了，你已经成为世界上最容易哄好的人。认为锐因早就暗渡陈仓，未来可期。";
         }
-        // 6. 无酸涩不锐因（虐偏多，虐≥35，虐-甜≥12）
-        else if (salt >= 35 && salt - sweet >= 12) {
+        // 6. 无酸涩不锐因 (虐批主导，甜批中等偏少)
+        else if (dominant === 1 && type0Count <= type1Count - 3) {
             title = "无酸涩不锐因";
             desc = "你唯爱看他们尴尬、推拉。这是他们最特别，也是最吸引你的地方，像一部疼痛电影，他们是当局者迷的主角。你手机里存满了各种神秘动图，每晚睡前必须品鉴。当合照出现时，你不禁发问：介素AI吗？";
         }
-        // 7. 爱卖不卖（平衡中庸，两边15-40，差值≤6）
-        else if (sweet >= 15 && sweet <= 40 && salt >= 15 && salt <= 40 && Math.abs(diff) <= 6) {
+        // 7. 家产你们随便吧 (佛系主导，且甜虐都不高)
+        else if (dominant === 2 && type0Count <= 7 && type1Count <= 7) {
             title = "家产你们随便吧";
             desc = "你心态很好，有时也会有被产品整到无语与力竭的时刻，但最后千言万语往往化作一句帅哥们你们随便吧。豆包豆包，帮我直接生成14双人cha和更多不可描述的视频。";
         }
-        // 8. 薛定谔的雨披（两边20-45，差值≤8）
-        else if (sweet >= 20 && salt >= 20 && Math.abs(diff) <= 8) {
+        // 8. 薛定谔的雨披 (甜虐接近，差距不超过3)
+        else if (Math.abs(type0Count - type1Count) <= 3 && type0Count >= 5 && type1Count >= 5) {
             title = "薛定谔的雨披";
             desc = "你时而觉得他俩好甜，有时又感觉不知道发生了什么，他们的关系又一朝回到解放前。你的解读取决于当天天气。但你可能是所有雨披里最接近锐因真实状态的人——因为连他们自己也不知道这算什么关系。";
         }
-        // 9. 酸酸甜甜（两边25-50，差值≤10）
-        else if (sweet >= 25 && salt >= 25 && Math.abs(diff) <= 10) {
+        // 9. 什么酸酸甜甜我们最爱 (甜虐都中等，缺德也不少)
+        else if (type0Count >= 5 && type1Count >= 5 && type3Count >= 4) {
             title = "什么酸酸甜甜我们最爱";
             desc = "你完美平衡了‘好甜’和‘好酸’，锐因给你带来过山车般的体验。一边觉得老产的风味真是仙品啊，一边为他们的不营业心塞。所以我的双人抖和双人直播都在哪里？";
         }
-        // 10. 对产品虐恋也是恋（甜高于虐，甜-虐在4-15之间，甜≥20）
-        else if (sweet > salt && sweet - salt >= 4 && sweet - salt <= 15 && sweet >= 20) {
+        // 10. 对产品虐恋也是恋 (甜批略多于虐批，差距1-5)
+        else if (type0Count > type1Count && type0Count - type1Count <= 5 && type0Count >= 5) {
             title = "对产品虐恋也是恋";
             desc = "我好爱你们，我好恨你们。\n建议多做几次测试看看会不会变质，毕竟全世界倒数第一喜欢你也是第一，恨海往往也是情天，但天可比海大很多呢。";
         }
-        // 11. 仰卧起坐型（虐高于甜，虐-甜在4-15之间，虐≥20）
-        else if (salt > sweet && salt - sweet >= 4 && salt - sweet <= 15 && salt >= 20) {
+        // 11. 仰卧起坐型 (虐批略多于甜批，差距1-5)
+        else if (type1Count > type0Count && type1Count - type0Count <= 5 && type1Count >= 5) {
             title = "仰卧起坐型";
             desc = "你容易被老产不卖的日子伤到，但又不舍得跑。时而血压飙升，时而血糖飙升，属于仰卧起坐型，锐因欠你一个心脏起搏器。";
         }
+        // 12. 雕蛙亲生的雨披 (兜底)
         else {
             title = "雕蛙亲生的雨披";
             desc = "你的测试结果很特别，你和其他雨披都不一样，因为你的测试结果形成了一种神秘配比。可能连你自己也说不清到底怎么嗑锐因。但这不重要，重要的是你还在看他们，还在宝他们，这就够了。";
         }
         
+        // 彩蛋事件
         let easterEgg = "";
-        if (userAnswers[12] === 0 && sweet > 25) easterEgg = "\n事件：你曾在深夜时分兴致勃勃刷过糖点剪辑视频兴奋到无法入眠。";
-        else if (userAnswers[5] === 1 && salt > 30) easterEgg = "\n事件：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓。";
-        else if (userAnswers[19] === 2 && sweet > salt) easterEgg = "\n事件：你的手机里存满了诡异动图，每天睡前品鉴。";
-        else if (userAnswers[20] === 0 && sweet > 30) easterEgg = "\n事件：你是奔走相告型雨披，雕蛙卖了微博转发就频繁了。留言板显化中。";
-        else if (userAnswers[8] === 0 && sweet > 20) easterEgg = "\n事件：你在搞家产的同时也认识了很多很好的互关～";
+        if (userAnswers[12] === 0 && type0Count > 8) easterEgg = "\n事件：你曾在深夜时分兴致勃勃刷过糖点剪辑视频兴奋到无法入眠。";
+        else if (userAnswers[5] === 1 && type1Count > 8) easterEgg = "\n事件：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓。";
+        else if (userAnswers[19] === 2 && type0Count > type1Count) easterEgg = "\n事件：你的手机里存满了诡异动图，每天睡前品鉴。";
+        else if (userAnswers[20] === 0 && type0Count > 8) easterEgg = "\n事件：你是奔走相告型雨披，雕蛙卖了微博转发就频繁了。留言板显化中。";
+        else if (userAnswers[8] === 0 && type0Count > 6) easterEgg = "\n事件：你在搞家产的同时也认识了很多很好的互关～";
         
         let resultHtml = `<div class="result-card">
                             <div class="result-title">${title}</div>
@@ -466,8 +447,6 @@
     }
     
     function resetGame() {
-        sweet = 0;
-        salt = 0;
         currentQ = 0;
         finished = false;
         userAnswers = [];
