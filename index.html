@@ -343,98 +343,88 @@
     function showResult() {
         finished = true;
         
-        // 统计每种选项类型的数量
-        let type0Count = userAnswers.filter(a => a === 0).length; // 甜批
-        let type1Count = userAnswers.filter(a => a === 1).length; // 虐批/发卖
-        let type2Count = userAnswers.filter(a => a === 2).length; // 佛系/中立
-        let type3Count = userAnswers.filter(a => a === 3).length; // 缺德乐子人
+        // 统计四种选项类型的数量
+        let c0 = userAnswers.filter(a => a === 0).length; // 甜批
+        let c1 = userAnswers.filter(a => a === 1).length; // 虐批
+        let c2 = userAnswers.filter(a => a === 2).length; // 佛系
+        let c3 = userAnswers.filter(a => a === 3).length; // 缺德
         
-        const total = userAnswers.length;
+        // 构建排序数组
+        const types = [
+            { type: 0, count: c0, name: "甜" },
+            { type: 1, count: c1, name: "虐" },
+            { type: 2, count: c2, name: "佛" },
+            { type: 3, count: c3, name: "缺" }
+        ];
+        types.sort((a, b) => b.count - a.count);
         
-        // 找出占比最高的类型
-        const maxCount = Math.max(type0Count, type1Count, type2Count, type3Count);
-        const dominantTypes = [];
-        if (type0Count === maxCount) dominantTypes.push(0);
-        if (type1Count === maxCount) dominantTypes.push(1);
-        if (type2Count === maxCount) dominantTypes.push(2);
-        if (type3Count === maxCount) dominantTypes.push(3);
+        const first = types[0].type;
+        const second = types[1].type;
         
-        const dominant = dominantTypes[0]; // 主类型
-        const secondMax = Math.max(...[type0Count, type1Count, type2Count, type3Count].filter((_, i) => i !== dominant));
-        
+        // 根据第一名和第二名的组合决定结果（4×3=12种组合）
         let title = "";
         let desc = "";
         
-        // 根据主类型和次类型组合判定结果（12种）
-        
-        // 1. 两眼一睁雕蛙我来了！(甜批主导，且虐批很少)
-        if (dominant === 0 && type1Count <= 4) {
-            title = "两眼一睁雕蛙我来了！";
-            desc = "你已经适应了神鬼二象性，无论两个人怎么互动你都会拍手叫好，只要有互动就行。你会发微博说诡秘们我不会再嗑了，实则乐在其中，隐隐享受。你的永恒心情是：看到你们好好的，我就幸福了。";
+        // 第一名是甜批(0)
+        if (first === 0) {
+            if (second === 1) {
+                title = "爽就完事了";
+                desc = "一个wvs评论就能让你回味一个星期，你心态很好，也有可能是因为被逼得没招了不得不好，你常常说锐因小气鬼，算了锐因长命百岁。每天乐呵呵冲浪只在意产品，闲来无事品鉴抖音和气象台女神们做的饭。只要同框就被哄好了，你已经成为世界上最容易哄好的人。认为锐因早就暗渡陈仓，未来可期。";
+            } else if (second === 2) {
+                title = "两眼一睁雕蛙我来了！";
+                desc = "你已经适应了神鬼二象性，无论两个人怎么互动你都会拍手叫好，只要有互动就行。你会发微博说诡秘们我不会再嗑了，实则乐在其中，隐隐享受。你的永恒心情是：看到你们好好的，我就幸福了。";
+            } else if (second === 3) {
+                title = "对产品虐恋也是恋";
+                desc = "我好爱你们，我好恨你们。\n建议多做几次测试看看会不会变质，毕竟全世界倒数第一喜欢你也是第一，恨海往往也是情天，但天可比海大很多呢。";
+            }
         }
-        // 2. 产品发卖主理人 (虐批主导，且甜批很少)
-        else if (dominant === 1 && type0Count <= 4) {
-            title = "产品发卖主理人";
-            desc = "数着没有卖的那些日子，你都恨不得直接冲到普莱蒂斯。寡寡的日子让你血压升高，内心咆哮你们只生不养，嫡雨披要发卖亲爹娘，实则嗑得最深。容易emo但又不肯跑路，典型刀子嘴豆腐心，锐因你这里欠我的用什么还。";
+        // 第一名是虐批(1)
+        else if (first === 1) {
+            if (second === 0) {
+                title = "无酸涩不锐因";
+                desc = "你唯爱看他们尴尬、推拉。这是他们最特别，也是最吸引你的地方，像一部疼痛电影，他们是当局者迷的主角。你手机里存满了各种神秘动图，每晚睡前必须品鉴。当合照出现时，你不禁发问：介素AI吗？";
+            } else if (second === 2) {
+                title = "产品发卖主理人";
+                desc = "数着没有卖的那些日子，你都恨不得直接冲到普莱蒂斯。寡寡的日子让你血压升高，内心咆哮你们只生不养，嫡雨披要发卖亲爹娘，实则嗑得最深。容易emo但又不肯跑路，典型刀子嘴豆腐心，锐因你这里欠我的用什么还。";
+            } else if (second === 3) {
+                title = "仰卧起坐型";
+                desc = "你容易被老产不卖的日子伤到，但又不舍得跑。时而血压飙升，时而血糖飙升，属于仰卧起坐型，锐因欠你一个心脏起搏器。";
+            }
         }
-        // 3. 被雕蛙调成m了 (缺德主导，或甜虐双高)
-        else if (dominant === 3 || (type0Count >= 7 && type1Count >= 7)) {
-            title = "被雕蛙调成m了";
-            desc = "你看到锐因躲闪只觉得也够爽，够好嗑的，不自然的表情也都使你嘴角上扬。你看酸涩互动像吃跳跳糖，越别扭越开心，不别扭更开心。你总会臆想他们已经是老夫老妻只是不肯承认需要避嫌。你有点容易甚至太容易原谅他们了吧？";
+        // 第一名是佛系(2)
+        else if (first === 2) {
+            if (second === 0) {
+                title = "爱卖不卖";
+                desc = "你心态很好，有时也会有被产品整到无语与力竭的时刻，但最后千言万语往往化作一句帅哥们你们随便吧。豆包豆包，帮我直接生成14双人cha和更多不可描述的视频。";
+            } else if (second === 1) {
+                title = "薛定谔的雨披";
+                desc = "你时而觉得他俩好甜，有时又感觉不知道发生了什么，他们的关系又一朝回到解放前。你的解读取决于当天天气。但你可能是所有雨披里最接近锐因真实状态的人——因为连他们自己也不知道这算什么关系。";
+            } else if (second === 3) {
+                title = "抓耳挠腮等同框 进展退展都是展";
+                desc = "摇摆不定的相处模式带给你的感觉更像一部未完待续的连续剧，一本没有完结的小说。遇到不好的、你不想看到的，统统存档跳过。但是道上的规矩是不许推未完结文，你已急哭。";
+            }
         }
-        // 4. 抓耳挠腮等同框 (佛系主导，或整体选择都很分散，分数都低)
-        else if (dominant === 2 && maxCount <= 8) {
-            title = "抓耳挠腮等同框 进展退展都是展";
-            desc = "摇摆不定的相处模式带给你的感觉更像一部未完待续的连续剧，一本没有完结的小说。遇到不好的、你不想看到的，统统存档跳过。但是道上的规矩是不许推未完结文，你已急哭。";
-        }
-        // 5. 爽就完事了 (甜批主导，虐批中等偏少)
-        else if (dominant === 0 && type1Count <= type0Count - 3) {
-            title = "爽就完事了";
-            desc = "一个wvs评论就能让你回味一个星期，你心态很好，也有可能是因为被逼得没招了不得不好，你常常说锐因小气鬼，算了锐因长命百岁。每天乐呵呵冲浪只在意产品，闲来无事品鉴抖音和气象台女神们做的饭。只要同框就被哄好了，你已经成为世界上最容易哄好的人。认为锐因早就暗渡陈仓，未来可期。";
-        }
-        // 6. 无酸涩不锐因 (虐批主导，甜批中等偏少)
-        else if (dominant === 1 && type0Count <= type1Count - 3) {
-            title = "无酸涩不锐因";
-            desc = "你唯爱看他们尴尬、推拉。这是他们最特别，也是最吸引你的地方，像一部疼痛电影，他们是当局者迷的主角。你手机里存满了各种神秘动图，每晚睡前必须品鉴。当合照出现时，你不禁发问：介素AI吗？";
-        }
-        // 7. 家产你们随便吧 (佛系主导，且甜虐都不高)
-        else if (dominant === 2 && type0Count <= 7 && type1Count <= 7) {
-            title = "家产你们随便吧";
-            desc = "你心态很好，有时也会有被产品整到无语与力竭的时刻，但最后千言万语往往化作一句帅哥们你们随便吧。豆包豆包，帮我直接生成14双人cha和更多不可描述的视频。";
-        }
-        // 8. 薛定谔的雨披 (甜虐接近，差距不超过3)
-        else if (Math.abs(type0Count - type1Count) <= 3 && type0Count >= 5 && type1Count >= 5) {
-            title = "薛定谔的雨披";
-            desc = "你时而觉得他俩好甜，有时又感觉不知道发生了什么，他们的关系又一朝回到解放前。你的解读取决于当天天气。但你可能是所有雨披里最接近锐因真实状态的人——因为连他们自己也不知道这算什么关系。";
-        }
-        // 9. 什么酸酸甜甜我们最爱 (甜虐都中等，缺德也不少)
-        else if (type0Count >= 5 && type1Count >= 5 && type3Count >= 4) {
-            title = "什么酸酸甜甜我们最爱";
-            desc = "你完美平衡了‘好甜’和‘好酸’，锐因给你带来过山车般的体验。一边觉得老产的风味真是仙品啊，一边为他们的不营业心塞。所以我的双人抖和双人直播都在哪里？";
-        }
-        // 10. 对产品虐恋也是恋 (甜批略多于虐批，差距1-5)
-        else if (type0Count > type1Count && type0Count - type1Count <= 5 && type0Count >= 5) {
-            title = "对产品虐恋也是恋";
-            desc = "我好爱你们，我好恨你们。\n建议多做几次测试看看会不会变质，毕竟全世界倒数第一喜欢你也是第一，恨海往往也是情天，但天可比海大很多呢。";
-        }
-        // 11. 仰卧起坐型 (虐批略多于甜批，差距1-5)
-        else if (type1Count > type0Count && type1Count - type0Count <= 5 && type1Count >= 5) {
-            title = "仰卧起坐型";
-            desc = "你容易被老产不卖的日子伤到，但又不舍得跑。时而血压飙升，时而血糖飙升，属于仰卧起坐型，锐因欠你一个心脏起搏器。";
-        }
-        // 12. 雕蛙亲生的雨披 (兜底)
-        else {
-            title = "雕蛙亲生的雨披";
-            desc = "你的测试结果很特别，你和其他雨披都不一样，因为你的测试结果形成了一种神秘配比。可能连你自己也说不清到底怎么嗑锐因。但这不重要，重要的是你还在看他们，还在宝他们，这就够了。";
+        // 第一名是缺德(3)
+        else if (first === 3) {
+            if (second === 0) {
+                title = "什么酸酸甜甜我们最爱";
+                desc = "你完美平衡了‘好甜’和‘好酸’，锐因给你带来过山车般的体验。一边觉得老产的风味真是仙品啊，一边为他们的不营业心塞。所以我的双人抖和双人直播都在哪里？";
+            } else if (second === 1) {
+                title = "被雕蛙调成m了";
+                desc = "你看到锐因躲闪只觉得也够爽，够好嗑的，不自然的表情也都使你嘴角上扬。你看酸涩互动像吃跳跳糖，越别扭越开心，不别扭更开心。你总会臆想他们已经是老夫老妻只是不肯承认需要避嫌。你有点容易甚至太容易原谅他们了吧？";
+            } else if (second === 2) {
+                title = "雕蛙亲生的雨披";
+                desc = "你的测试结果很特别，你和其他雨披都不一样，因为你的测试结果形成了一种神秘配比。可能连你自己也说不清到底怎么嗑锐因。但这不重要，重要的是你还在看他们，还在宝他们，这就够了。";
+            }
         }
         
         // 彩蛋事件
         let easterEgg = "";
-        if (userAnswers[12] === 0 && type0Count > 8) easterEgg = "\n事件：你曾在深夜时分兴致勃勃刷过糖点剪辑视频兴奋到无法入眠。";
-        else if (userAnswers[5] === 1 && type1Count > 8) easterEgg = "\n事件：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓。";
-        else if (userAnswers[19] === 2 && type0Count > type1Count) easterEgg = "\n事件：你的手机里存满了诡异动图，每天睡前品鉴。";
-        else if (userAnswers[20] === 0 && type0Count > 8) easterEgg = "\n事件：你是奔走相告型雨披，雕蛙卖了微博转发就频繁了。留言板显化中。";
-        else if (userAnswers[8] === 0 && type0Count > 6) easterEgg = "\n事件：你在搞家产的同时也认识了很多很好的互关～";
+        if (userAnswers[12] === 0 && c0 > 8) easterEgg = "\n事件：你曾在深夜时分兴致勃勃刷过糖点剪辑视频兴奋到无法入眠。";
+        else if (userAnswers[5] === 1 && c1 > 8) easterEgg = "\n事件：你偷偷在好友圈发布微博，发卖雕蛙刻不容缓。";
+        else if (userAnswers[19] === 2 && c0 > c1) easterEgg = "\n事件：你的手机里存满了诡异动图，每天睡前品鉴。";
+        else if (userAnswers[20] === 0 && c0 > 8) easterEgg = "\n事件：你是奔走相告型雨披，雕蛙卖了微博转发就频繁了。留言板显化中。";
+        else if (userAnswers[8] === 0 && c0 > 6) easterEgg = "\n事件：你在搞家产的同时也认识了很多很好的互关～";
         
         let resultHtml = `<div class="result-card">
                             <div class="result-title">${title}</div>
